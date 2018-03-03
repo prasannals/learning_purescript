@@ -23,3 +23,17 @@ main :: forall e. Eff (console :: CONSOLE | e) Unit
 main = do         -- this is a function definition
   log "Hello sailor!"    -- logging stuff
 ```
+
+* To Build Project
+```
+$ pulp build
+```
+* To Run Project
+```
+$ pulp run
+```
+* To compile to a js file
+```
+$ pulp build -O --to file.js
+```
+Include the "file.js" in some html file and open the html file in a browser to see the output.
