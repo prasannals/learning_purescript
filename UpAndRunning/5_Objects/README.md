@@ -3,8 +3,8 @@ Records are equivalent to JavaScript Objects(dictionary in python, map in java a
 
 ### Creating a Record
 ```
-lang = {type : "Functional", name : "PureScript"}
--- {key1 : value1, key2: value2} and so on
+lang = {type : "Functional", name : "PureScript", id :1}
+-- {key1 : value1, key2: value2, key3: value3} and so on
 ```
 
 ### Accessing elements from the Record
