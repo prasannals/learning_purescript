@@ -56,3 +56,8 @@ s \= anotherStr -- returns "false" . "\=" is the "not equals" operator.
 a = true -- a is true
 b = false -- b is false
 ```
+
+#### Char
+```
+ch = 'a'  -- "":type ch" will return Char 
+```

@@ -1,4 +1,4 @@
-## Comparison
+## Comparison, Logical Operators and if then else
 
 ### Comparison operators
 
@@ -31,6 +31,9 @@ not (1 < 2) -- gives false. (1 < 2) is true. not true is false
 --    &&       "&&" is the logical AND operator
 --    ||       "||" is the logical OR operator
 
+(1 == 1) && (2 == 2)
+(1 == 1) || (2 == 2)
+
 ```
 ### if then else expressions
 ```
@@ -39,6 +42,9 @@ not (1 < 2) -- gives false. (1 < 2) is true. not true is false
 -- if booleanExpression then expr1 else expr2
 
 a = if (1 < 2) then 1 else 2  
+
+-- nesting if else
+if (1 < 2) then (if (2 > 1) then 1 else 0) else 4
 
 -- NOTE: the condition has to be something that evaluates to a Boolean
 -- "if 1 then true else false" would be invalid because 1 is not a Boolean
