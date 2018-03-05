@@ -6,7 +6,7 @@ import Control.Monad.Eff.Console (CONSOLE, log)
 import Data.Array
 import Data.Maybe (fromMaybe)
 
-arr :: Array Int
+arr :: Array (Array Int)
 arr = [[1, 2, 3, 4, 5], [1, 2, 3, 4, 5] ]
 
 loopAdd :: (Array Int) -> Int -> Int -> Int
@@ -19,8 +19,10 @@ twoDAdd arr acc i = if (i < (length arr))
                       then twoDAdd arr (acc + (loopAdd (fromMaybe [] (arr !! i)) 0 0)) (i + 1)
                       else acc
 
--- for()
+functionalTwoDAdd :: (Array (Array Int)) -> Int
+functionalTwoDAdd arr  = foldl (\ac oneDArr -> ac + (foldl (\acc ele -> acc + ele) 0 oneDArr ) ) 0 arr
 
 main :: forall e. Eff (console :: CONSOLE | e) Unit
 main = do
-  log (show (loopAdd arr 0 0) )
+  log (show (twoDAdd arr 0 0) )
+  --log (show (functionalTwoDAdd arr))
