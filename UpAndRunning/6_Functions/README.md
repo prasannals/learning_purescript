@@ -92,7 +92,6 @@ add 1 2
 -- All this happens behind the scenes. As far as you're concerned, add takes
 -- two parameters and returns their sum.
 ```
-
 But there are advantages to currying functions.
 * We can create "specialized" functions. Instead of having a function which adds two numbers, we can specialize it, say, to add 3 to any number passed in.
 * We can pass in parameters as "contextual information"
