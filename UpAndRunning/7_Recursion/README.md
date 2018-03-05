@@ -55,9 +55,9 @@ Hence, we need only learn how to convert while loops into recursive functions to
 
 Let's analyse a while loop
 
-![](while1.png)
+![](https://i.imgur.com/LVBwAQ2.png)
 
-![](while2.png)
+![](https://i.imgur.com/1jm92I5.png)
 
 #### Guidelines for writing a while loop as a recursive function
 1. Insert all "loop variables" into the function arguments.
