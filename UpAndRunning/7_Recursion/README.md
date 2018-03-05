@@ -62,7 +62,7 @@ Let's analyse a while loop
 #### Guidelines for writing a while loop as a recursive function
 1. Insert all "loop variables" into the function arguments.
 2. Variables which are outside the while loop block which are getting modified inside the while loop, such variables should also be put inside the function arguments.
-3. Variables which have block level scope can be replaced with an expression or a another function which evaluates to the same.
+3. Variables which have block level scope can be replaced with an expression or another function which evaluates to the same.
 4. return statements and break statements are nothing but the "base case"(exit condition) in a recursive function.
 5. continue statements are nothing but recursive calls where only the "loop variables" are updated and all other arguments are kept the same.
 
@@ -89,4 +89,4 @@ fact n acc = if n == 0
 ```
 In this example, once the recursive call returns, no other operation is being performed. The recursive call itself is the last operation performed before the function returns. Hence, no information needs to be maintained in the calling functions stack. In this case, the recursive call can simply be replaced with a jump to the first line of the function.
 
-Stack frame is not allocated for recursive calls. Hence, stack overflow can be avoided. 
+Stack frame is not allocated for recursive calls. Hence, stack overflow can be avoided.
