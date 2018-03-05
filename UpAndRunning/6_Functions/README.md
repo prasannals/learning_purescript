@@ -45,7 +45,7 @@ myCalc :: Int -> Int -> Int
 myCalc a b = (a + b) + (a - (b * b) )
 
 doCalc :: (Int -> Int -> Int) -> Int -> Int -> Int
-doCalc a b = ( (a * a) - (myCalc a b) ) * b
+doCalc func a b = ( (a * a) - (func a b) ) * b
 
 -- (Int -> Int -> Int) specifies that the function takes a function which has
 -- two int arguments and returns another int

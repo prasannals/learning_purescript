@@ -59,5 +59,5 @@ b = false -- b is false
 
 #### Char
 ```
-ch = 'a'  -- "":type ch" will return Char 
+ch = 'a'  -- "":type ch" will return Char
 ```
