@@ -92,3 +92,21 @@ If we try to compile the above, we get
 ![Imgur](https://i.imgur.com/yzywEzF.png)
 
 Our old friend, the pattern match error appears. We have a partial function. And we already know how to solve these.(if not, refer pattern matching chapter)
+
+### NewTypes
+
+NewTypes are just types with a few additional constraints.
+
+* NewTypes can have only one data constructor.
+* Data constructor in new types can have only one parameter.
+
+Apart from these constraints, the usage of newtype is exactly the same as ADTs.
+
+##### Creating a newtype
+```
+newtype TypeName = DataCons Param
+
+-- TypeName is the name of the newtype
+-- DataCons is the name of the data constructor
+-- Param is any argument. Arguments can be any primitive type, records, arrays and even other ADTs/newtypes.
+```
