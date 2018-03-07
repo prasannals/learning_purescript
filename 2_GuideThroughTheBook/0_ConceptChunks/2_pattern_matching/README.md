@@ -149,3 +149,110 @@ Now, the function will compile without error. But to call it
   * BUT if we get a value which isn't specified, we get a runtime error! Yikes! REMEMBER - use unsafePartial with caution! We don't want runtime errors!
 
 TIP : Use Maybe type to return "Nothing" in cases where you're unsure what your function should return.
+
+
+## What else can we pattern match?
+
+### Arrays
+
+Examples
+```
+-- don't worry too much about "forall a.". We'll learn what that is soon.
+isEmpty :: forall a. Array a -> Boolean
+isEmpty [] = true  -- matches empty array
+isEmpty _ = false  -- matches everything else
+
+-- this function only multiplies the middle two numbers in an array of length 4
+-- if the first and last number are both either 0 or 1
+mulMid :: Array Int -> Int
+mulMid [0, a, b, 0] = a * b
+mulMid [1, a, b, 1] = a * b
+mulMid _ = 0
+```
+
+* We can only match arrays of fixed length.
+* No support for matching arrays of unspecified length.
+* If the above feature is required, use Data.List
+
+### Records
+
+While discussing Type Synonyms, we came across the following code
+```
+type Product = {name :: String, category :: String, price :: Number}
+type Order = {id :: Int, product :: Product}
+
+orderStr :: Order -> String
+orderStr order = (show order.id) <> ", " <> (productStr order.product)
+
+productStr :: Product -> String
+productStr product = product.name <> " : " <> product.category <> " : " <> (show $ product.price)
+```
+
+We could rewrite orderStr and productStr using pattern matching as shown below
+
+```
+productStr :: {name :: String, category :: String, price :: Number} -> String
+productStr {name: n, category : c, price : p} = n <> " : " <> c <> " : " <> (show $ p)
+```
+
+{name :: String, category :: String, price :: Number} specifies that we're looking for a record with a name field that is a String, category field that is a String and a price that is a Number.
+
+{name: n, category : c, price : p}  Here, we're telling purescript to bind the value of key "name" to local variable "n", bind value associated with key "category" to local variable "c". Finally, bind value associated with key "price" with local variable "p".
+
+productStr :: {name :: String, category :: String, price :: Number} -> String
+
+Here, we're saying that we accept records which have "name" , "category" and "price" fields. It shouldn't have fewer fields. Nor should it have more fields.
+
+##### Row polymorphism
+
+But if we only care about "name", "category" and "price" fields existing in a record and we don't mind other fields tagging along with "name", "category" and "price", in this case, we can use
+
+```
+productStr :: forall r. {name :: String, category :: String, price :: Number | r} -> String
+productStr {name : n, category : c, price : p} = n <> " : " <> c <> " : " <> (show $ p)
+```
+We'll learn more about the "forall r." soon, and we will revisit this topic for a more detailed understanding. But for now, just use that syntax and know that what you're basically saying there is "I want name, category and price fields to be present in a record. They absolutely need to be present. But I don't mind having other fields along with them".
+
+
+We can rewrite orderStr as follows
+```
+orderStr :: {id :: Int, product :: {name :: String, category :: String, price :: Number}} -> String
+orderStr {id : id, product : {name : n, category : c, price : p}} = (show id) <> ", " <> (productStr {name : n, category : c, price : p})
+```
+
+We can add row polymorphism to orderStr as well
+
+```
+orderStr :: forall r0 r1. {id :: Int, product :: {name :: String, category :: String, price :: Number | r0} | r1} -> String
+orderStr {id : id, product : {name : n, category : c, price : p}} = (show id) <> ", " <> (productStr {name : n, category : c, price : p})
+```
+
+Now we can call orderStr with any record as long as it contains fields id and product.
+
+Notice how we had to write "productStr {name : n, category : c, price : p}". We had to do that because we didn't have the entire product record bound to a variable name.
+
+#### Binding names to patterns
+
+```
+orderStr :: {id :: Int, product :: {name :: String, category :: String, price :: Number}} -> String
+orderStr {id : id, product : prod@{name : n, category : c, price : p}} = (show id) <> ", " <> (productStr prod)
+```
+
+We used prod@pattern to bind the entire matched object to "prod" variable.
+
+We could do the same even for the entire order
+
+```
+orderStr order@{id : id, product : prod@{name : n, category : c, price : p}} = (show id) <> ", " <> (productStr prod)
+
+-- entire order is now bound to variable "order"
+```
+
+We could bind other patterns too, such as arrays
+
+```
+mulMid :: Array Int -> Int
+mulMid arr@[0, a, b, 0] = a * b
+mulMid arr@[1, a, b, 1] = a * b -- we can use whole array "arr" here. But... yeah... in our example, not much use of doing this.
+mulMid arr@_ = 0
+```

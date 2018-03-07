@@ -23,6 +23,34 @@ sumTillN n = case n of
               1 -> 1
               anythingElse -> anythingElse + (sumTillN (n - 1))
 
+-- don't worry too much about "forall a.". We'll learn what that is soon.
+isEmpty :: forall a. (Array a) -> Boolean
+isEmpty [] = true  -- matches empty array
+isEmpty _ = false  -- matches everything else
+
+-- this function only multiplies the middle two numbers in an array of length 4
+-- if the first and last number are both either 0 or 1
+mulMid :: Array Int -> Int
+mulMid [0, a, b, 0] = a * b
+mulMid [1, a, b, 1] = a * b
+mulMid _ = 0
+
+type Product = {name :: String, category :: String, price :: Number}
+type Order = {id :: Int, product :: Product}
+
+productStr :: forall r. {name :: String, category :: String, price :: Number | r} -> String
+productStr {name : n, category : c, price : p} = n <> " : " <> c <> " : " <> (show $ p)
+
+-- orderStr :: {id :: Int, product :: {name :: String, category :: String, price :: Number}} -> String
+-- orderStr {id : id, product : {name : n, category : c, price : p}} = (show id) <> ", " <> (productStr {name : n, category : c, price : p})
+
+-- Same thing, but we name the pattern here
+orderStr :: {id :: Int, product :: {name :: String, category :: String, price :: Number}} -> String
+orderStr order@{id : id, product : prod@{name : n, category : c, price : p}} = (show id) <> ", " <> (productStr prod)
+
+-- to call orderStr
+-- orderStr { id : 1 , product : {name : "Prod", category : "Cat" , price : 10.0}}
+
 main :: forall e. Eff (console :: CONSOLE | e) Unit
 main = do
   log "Hello sailor!"
