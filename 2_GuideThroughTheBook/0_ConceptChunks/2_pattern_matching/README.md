@@ -47,6 +47,24 @@ parseBool _ = false
 
 * We can pattern match on Booleans, Chars, Numbers, Arrays and Records as well
 
+#### Guards
+
+Consider the gcd example used before. We could rewrite it using "guards" as
+
+```
+gcd :: Int -> Int -> Int
+gcd n 0 = n
+gcd 0 n = n
+gcd n m | n > m = gcd (n - m) m
+        | otherwise = gcd n (m - n)
+```
+
+A guard is just a boolean expression that needs to be evaluated before the function executes.
+
+pattern match ----> guard check ----> execute corresponding expression
+
+Syntax is as you see in the example. Put a "|" after the parameters and specify the guard condition after which we can specify what the function evaluates to.
+
 #### Case Expressions
 
 Do we HAVE to specify a function every time we want to use pattern matching? Not necessarily.
@@ -74,7 +92,7 @@ sumTillN n = case n of
 sumTillN :: Int -> Int
 sumTillN n = case n of
               1 -> 1
-              _ -> n + (sumTillN (n - 1)) 
+              _ -> n + (sumTillN (n - 1))
 ```
 
 #### Partial Functions
@@ -103,6 +121,7 @@ Alternatively, add a Partial constraint to the type of the enclosing value.
 The compiler itself is telling us how to solve the error
 
 * Option 1 - Add the " _ " case
+
 ```
 pat :: Number -> String
 pat 0.25 = "quarter"
@@ -110,7 +129,9 @@ pat 0.5 = "half"
 pat 1.0 = "full"
 pat _ = "Not sure" -- our program now knows what to do for all inputs
 ```
+
 * Option 2 - Add the "Partial" constraint.
+
 ```
 -- "=>" syntax is used to add Type Class constraints. We'll learn more about these in other lessons. For now, just use this syntax. Basically, it adds some constraint to the function.
 pat :: Partial => Number -> String
@@ -118,11 +139,13 @@ pat 0.25 = "quarter"
 pat 0.5 = "half"
 pat 1.0 = "full"
 ```
+
 Now, the function will compile without error. But to call it
-    * install purescript-partial. Use "bower install purescript-partial --save"
-    * import Partial.Unsafe (unsafePartial)
-    * Call the function as  "unsafePartial (pat 1.0)" or whatever other value you want to pass into the function
-    * The function returns expected values for specified patterns.
-    * BUT if we get a value which isn't specified, we get a runtime error! Yikes! REMEMBER - use unsafePartial with caution! We don't want runtime errors!
+
+  * install purescript-partial. Use "bower install purescript-partial --save"
+  * import Partial.Unsafe (unsafePartial)
+  * Call the function as  "unsafePartial (pat 1.0)" or whatever other value you want to pass into the function
+  * The function returns expected values for specified patterns.
+  * BUT if we get a value which isn't specified, we get a runtime error! Yikes! REMEMBER - use unsafePartial with caution! We don't want runtime errors!
 
 TIP : Use Maybe type to return "Nothing" in cases where you're unsure what your function should return.
