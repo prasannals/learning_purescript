@@ -110,3 +110,8 @@ newtype TypeName = DataCons Param
 -- DataCons is the name of the data constructor
 -- Param is any argument. Arguments can be any primitive type, records, arrays and even other ADTs/newtypes.
 ```
+
+Why have newtypes?
+* newtypes only exist at compile type. They help in compile time type checking.
+* They are replaced by whatever they represent (the "Param") at runtime. So, no runtime performance overhead is incurred.
+* Allow us to attach different behaviour to a type without runtime overhead.
