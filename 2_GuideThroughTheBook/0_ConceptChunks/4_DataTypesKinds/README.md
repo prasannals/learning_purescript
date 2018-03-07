@@ -27,7 +27,7 @@ Type is something that has a kind. More concretely, when we pass in some type in
 :kind Array      -- Type -> Type   again, array takes a type and gives an array of that type
 ```
 
-##### Here is the confusing bit - There is a kind called "Type". All of the types that we usually use will have the kind "Type".
+#### Here is the confusing bit - There is a kind called "Type". All of the types that we usually use will have the kind "Type".
 
 ### Kind
 
