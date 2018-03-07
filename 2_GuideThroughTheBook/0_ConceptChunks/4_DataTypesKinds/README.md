@@ -32,3 +32,8 @@ Type is something that has a kind. More concretely, when we pass in some type in
 ### Kind
 
 Used to categorise types.
+
+
+### Convention used in this course -
+
+Whenever I say "type", I don't refer to the kind type. Rather, the types which when passed into ":kind" produce a kind. If I want to refer to the "kind Type" , I will explicitly mention that it's the kind Type.
