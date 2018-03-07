@@ -8,7 +8,7 @@ data Shape = Circle Point Number
 
 data Point = Point { x :: Number, y :: Number}
 ```
-![](https://i.imgur.com/nSTjL33.jpg)
+![Imgur](https://i.imgur.com/RcPSQTn.jpg)
 
 * "Shape" is the name of the ADT
 * Type Constructors can have any name, including the same name as the ADT but both live in different name spaces
@@ -47,7 +47,7 @@ showPoint :: Point -> String
 showPoint (Point {x, y}) = "Point : x=" <> (show x) <> ", y=" <> (show y)
 ```
 
-![](https://i.imgur.com/hudD3Qt.png)
+![Imgur](https://i.imgur.com/xPOoTfJ.jpg)
 
 #### Short Detour - Record Puns
 
@@ -73,7 +73,7 @@ showShape (Line p0@(Point {x:x0, y:y0}) p1@(Point {x:x1, y:y1})) = "Line, " <> (
 showShape (Text p@(Point {x,y}) text) = "Text, " <> (showPoint p) <> ", Text: " <> text
 ```
 
-![Imgur](https://i.imgur.com/s7Ienrg.jpg)
+![Imgur](https://i.imgur.com/tRVlzWk.jpg)
 
 #### Make sure you match all possible type constructors. Else we get an error
 
