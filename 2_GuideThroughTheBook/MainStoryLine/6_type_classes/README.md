@@ -89,3 +89,172 @@ In general, syntax is
 instance instanceName :: TypeClassName [one or more type for matching the quantified types] where
   -- implementation of the list of functions specified in the type class definition
 ```
+
+### Common Type Classes
+
+#### 1 . Show
+```
+-- | The `Show` type class represents those types which can be converted into
+-- | a human-readable `String` representation.
+class Show a where
+  show :: a -> String
+```
+You might have come across a situation where you evaluate some expression in psci and get an error telling you that there is no Show instance for your type. psci tries to use "show" function in the Show type class to get the string representation of the type you pass in in order to display it on the terminal. Hence, if you haven't defined a show instance for your type but try to print it on psci, we get an error.
+
+Defining a Show instance for our Point and Shape class
+```
+instance showPoint :: Show Point where
+  show :: Point -> String
+  show (Point {x, y}) = "Point : x=" <> (show x) <> ", y=" <> (show y)
+
+instance showShape :: Show Shape where
+    show :: Shape -> String
+    show (Circle p@(Point {x,y}) radius) = "Circle, " <> (show p) <> " , radius=" <> (show radius)
+    show (Rectangle p@(Point {x,y}) w h) = "Rectangle, " <> (show p) <> ", width=" <> (show w) <> ", height=" <> (show h)
+    show (Line p0@(Point {x:x0, y:y0}) p1@(Point {x:x1, y:y1})) = "Line, " <> (show p0) <> ", " <> (show p1)
+    show (Text p@(Point {x,y}) text) = "Text, " <> (show p) <> ", Text: " <> text
+```
+Observe how we're using "(show p)" in our showShape function. We're calling the show function on the Point ADT. Since we've defined a Show instance for Point, it works as expected.
+
+#### 2 . Eq
+
+Eq instances are used to define equality.
+
+```
+class Eq a where
+  eq :: a -> a -> Boolean
+
+-- "==" operator is simply an alias for "eq" function
+```
+
+Defining Eq instances for Point and Shape
+```
+instance pointEq :: Eq Point where
+  eq :: Point -> Point -> Boolean
+  eq (Point {x:x0, y:y0}) (Point {x:x1, y:y1}) = (x0 == x1) && (y0 == y1)
+
+instance shapeEq :: Eq Shape where
+  eq :: Shape -> Shape -> Boolean
+  eq (Circle p0 radius0) (Circle p1 radius1) = (p0 == p1) && (radius0 == radius1)
+  eq (Rectangle p0 w0 h0) (Rectangle p1 w1 h1) = (p0 == p1) && (w0 == w1) && (h0 == h1)
+  eq (Line p00 p01) (Line p10 p11) = (p00 == p10) && (p01 == p11)
+  eq (Text p0 text0) (Text p1 text1) = (p0 == p1) && (text0 == text1)
+  eq _ _ = false
+```
+Observe that we're using (p0 == p1) in eq for Shape. This works because Eq instance for Point is defined.
+
+#### 3 . Ord
+
+Ord type class is used to specify the ordering. ">" , "<" , ">=" , "<=" operators are defined using "compare" function defined in Ord.
+
+```
+data Ordering = LT | EQ | GT
+
+class Eq a <= Ord a where
+  compare :: a -> a -> Ordering
+
+-- NOTE : Ordering is with respect to the FIRST argument
+-- if the first argument is less than the second, we return LT
+-- if the first argument is greater than the second, we return GT
+-- if both arguments are equal, we return EQ
+```
+#### Quick detour - Superclasses
+Observer "Eq a <= Ord a". "Eq a <=" is used to specify the constraint that there needs to be an Eq instance defined for "a" before an Ord instance can be defined for it. For every instance of Ord a there must be an Eq a instance defined. Eq a is called the superclass of Ord a. Ord a is the subclass of Eq a.
+
+![Imgur](https://i.imgur.com/M18W98T.jpg)
+
+Defining an Ord instance for Point. Let's just have a simple rule saying that a Point is greater than another point if it's x axis is greater.
+
+```
+instance pointOrd :: Ord Point where
+  compare :: Point -> Point -> Ordering
+  compare p0@(Point {x:x0, y:y0}) p1@(Point {x:x1, y:y1}) = if p0 == p1
+                                                               then EQ
+                                                               else if x0 > x1
+                                                                        then GT
+                                                                        else LT
+```
+In psci, we type the following
+```
+> p0 = Point {x: 100.0, y : 50.0}
+> p1 = Point {x: 150.0, y : 40.0}
+> p0 > p1
+false
+> p1 > p0
+true
+```
+
+#### 4 . Semiring - add, mul
+
+Semiring class is defined for types which support addition and multiplication.
+
+```
+class Semiring a where
+  add  :: a -> a -> a   -- operator + is an alias for add
+  zero :: a             -- a + zero = a  should be satisfied
+  mul  :: a -> a -> a   -- operator * is an alias for mul
+  one  :: a             -- a * one  = a  should be satisfied
+```
+
+Try the following in psci
+```
+> addMe first second = first + second
+> :type addMe
+forall a. Semiring a => a -> a -> a
+```
+Few things to observe :
+* Semiring instance is required on type "a". This is because we're using "+" i.e. "add" function which is in Semiring type class.
+* add, mul are performed on arguments of the same type
+
+Defining Semiring instance for Point
+
+```
+instance semiringPoint :: Semiring Point where
+  add :: Point -> Point -> Point
+  add (Point {x:x0, y:y0}) (Point {x:x1, y:y1}) = Point {x : (x0 + x1), y : (y0 + y1)}
+
+  zero :: Point
+  zero = Point {x:0.0, y:0.0}
+
+  one :: Point
+  one = Point {x:1.0, y:1.0}
+
+  mul :: Point -> Point -> Point
+  mul (Point {x:x0, y:y0}) (Point {x:x1, y:y1}) = Point {x : (x0 * x1), y : (y0 * y1)}
+```
+
+#### 5. Semigroup and Monoid
+
+Semigroup is used to define "append" operation. "<>" operator is an alias for the "append" function.
+
+```
+class Semigroup a where
+  append :: a -> a -> a
+```
+* append takes two parameters of the some type and returns the same type
+
+Defining append for Point (NOTE: I'm not even sure what append should be like for Point. I've just defined it as addition just for the purpose of seeing how to define an instance for Semigroup)
+
+```
+instance semigroupPoint :: Semigroup Point where
+  append :: Point -> Point -> Point
+  append first second = first + second
+```
+
+#### Monoid
+Monoid is very similar to Semigroup except that it defines an "empty value" for a type.
+
+```
+class Semigroup m <= Monoid m where
+  mempty :: m
+```
+
+We can see from the type class definition of Monoid that Monoid is a subclass of Semigroup. Hence for all "a", "a" will also have "append" function defined. We're just adding "mempty" functionality also in Monoid class.
+
+Defining Monoid instance for Point. Let's just say that a point at (0.0, 0.0) is "empty" (Er.. yeah.. it might not make sense. Just defining it so that we get to practice defining more instances of different type classes)
+
+```
+instance monoidPoint :: Monoid Point where
+  mempty :: Point
+  mempty = Point {x:0.0, y:0.0}
+```

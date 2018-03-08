@@ -69,6 +69,27 @@ instance semiringPoint :: Semiring Point where
   mul :: Point -> Point -> Point
   mul (Point {x:x0, y:y0}) (Point {x:x1, y:y1}) = Point {x : (x0 * x1), y : (y0 * y1)}
 
+instance pointEq :: Eq Point where
+  eq :: Point -> Point -> Boolean
+  eq (Point {x:x0, y:y0}) (Point {x:x1, y:y1}) = (x0 == x1) && (y0 == y1)
+
+instance shapeEq :: Eq Shape where
+  eq :: Shape -> Shape -> Boolean
+  eq (Circle p0 radius0) (Circle p1 radius1) = (p0 == p1) && (radius0 == radius1)
+  eq (Rectangle p0 w0 h0) (Rectangle p1 w1 h1) = (p0 == p1) && (w0 == w1) && (h0 == h1)
+  eq (Line p00 p01) (Line p10 p11) = (p00 == p10) && (p01 == p11)
+  eq (Text p0 text0) (Text p1 text1) = (p0 == p1) && (text0 == text1)
+  eq _ _ = false
+
+instance pointOrd :: Ord Point where
+  compare :: Point -> Point -> Ordering
+  compare p0@(Point {x:x0, y:y0}) p1@(Point {x:x1, y:y1}) = if p0 == p1
+                                                               then EQ
+                                                               else if x0 > x1
+                                                                        then GT
+                                                                        else LT
+
+
 instance semigroupPoint :: Semigroup Point where
   append :: Point -> Point -> Point
   append first second = first + second
