@@ -78,5 +78,15 @@ instance monoidPoint :: Monoid Point where
   mempty :: Point
   mempty = Point {x:0.0, y:0.0}
 
+class DoingCalc a where
+  doCalc :: a -> Int
+
+instance shapeCalc :: DoingCalc Shape where
+  doCalc :: Shape -> Int
+  doCalc (Circle p radius) = 1
+  doCalc (Rectangle p w h) = 2
+  doCalc (Line p0 p1) = 3
+  doCalc (Text p text) = 4
+
 main :: forall e. Eff (console :: CONSOLE | e) Unit
 main = log "Hello sailor!"
