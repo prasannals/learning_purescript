@@ -35,6 +35,7 @@ We could use the hero of our mini story - lambda expressions! We can create anon
 ```
 func (\i s -> s <> (show i)) 1 "blah" -- evaluates to "blah1"
 ```
+![Imgur](https://i.imgur.com/VmPRBuw.jpg)
 
 * We create lambda expressions using "\" syntax. Immediately after "\" we specify the arguments. After "->", we tell the expression that the function evaluates to.
 * Instead of "=", we use "->"
