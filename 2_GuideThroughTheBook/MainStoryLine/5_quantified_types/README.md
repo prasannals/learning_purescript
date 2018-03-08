@@ -13,6 +13,15 @@ In the first line, what we're saying is "Let a be any type. For any type a, the 
 
 Here, "a" can be any type(recall our previous discussion about types).
 
+* We can have any number of quantified types
+```
+func :: forall a b c d e. a -> b -> c -> d -> e -> e
+```
+above is an example of a function with five quantified types
+
+* Use the quantified types however you want, but make sure that it makes sense to use them in the context.
+For example, Array expects one type to be passed in and it returns an array of that type. It won't make sense to pass in two types into an array. Or a function, say, (a -> b) into an array.
+
 Another example
 
 ```
@@ -37,7 +46,7 @@ For now, firstly, the above example is wrong. Because "a" can be any type. Inclu
 Also, how do we say something like "Only take those types where "+" has a proper defined meaning and add "ele" to it"? (we're not adding 10 because addition with Int might not be defined for every type) We'll learn how to specify this, again, when we learn Type Classes.
 
 #### Here's the problem - it's difficult to come up with practical useful examples which use quantified types but don't use type class constraints.
-The types will be too general without the constraints and we will be resticted to doing very general stuff. We will revisit quantified types once we learn Type Classes.
+The types will be too general without the constraints and we will be restricted to doing very general stuff. We will revisit quantified types once we learn Type Classes.
 
 ### For now, the summary is that whenever we use quantified types, say, "a", "a" can be any type.
 
