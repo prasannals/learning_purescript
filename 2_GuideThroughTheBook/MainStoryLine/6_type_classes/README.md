@@ -297,10 +297,47 @@ main = log $ show $ doCalc anotherShape
 
 ### Instance Dependencies
 
-```
-instance showArray :: Show a => Show (Array a) where
-```
+This is how to add constraints to type class instances.
+
+![Imgur](https://i.imgur.com/LUBL4cT.jpg)
+
+![Imgur](https://i.imgur.com/5st3eIj.jpg)
+
+### Multi Parameter Type Classes
+There can be multiple quantified types in a type class as shown below
 
 ```
-instance showEither :: (Show a, Show b) => Show (Either a b) where
+class Stream stream element where
+  uncons :: stream -> Maybe { head :: element, tail :: stream }
+
+instance streamArray :: Stream (Array a) a where
+  uncons = Array.uncons
+
+instance streamString :: Stream String Char where
+  uncons = String.uncons
 ```
+
+### Functional Dependencies
+
+Multi parameter type classes can cause complications with type inference.
+
+Using the above defined "uncons" function,
+```
+genericTail xs = map _.tail (uncons xs)
+```
+We pass "xs" to "uncons". Type of "xs" can help resolve the type of "stream"(see above "Stream" type class). Type of "element" is still a total mystery to the compiler.
+
+Let's take the example when "xs" is a String. "stream" will be String. But "element" can be anything. We know that "element" is a Char. But the compiler doesn't have any clues to infer that.
+
+We can add a "functional dependency" to Stream class as shown below
+```
+class Stream stream element | stream -> element where
+  uncons :: stream -> Maybe { head :: element, tail :: stream }
+```
+"stream element | stream -> element" this part tells the compiler that whatever "stream" is, it'll have a unique mapping to "element" type. This is enough information for the compiler to let the code compile.
+
+### Nullary type classes
+
+* We can even define type classes with zero arguments. These are called "Nullary Type Classes".
+* "Partial" is an example for Nullary type class
+* These type classes can be thought of as "labels" used to mark certain functions. When we add "Partial" constraint to a function, we're just marking the function and assuring the compiler that we're aware of what we're doing and to let this code compile even if it might end up crashing at runtime.
