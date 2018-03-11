@@ -258,3 +258,49 @@ instance monoidPoint :: Monoid Point where
   mempty :: Point
   mempty = Point {x:0.0, y:0.0}
 ```
+
+
+### Type Annotations
+
+![Imgur](https://i.imgur.com/57pVqoX.jpg)
+
+### Overlapping instances
+
+In a nutshell, if we have multiple definitions of the same type class for the same types -
+* Code still compiles without warnings (if no call is made to the functions within the type class).
+* But when we call functions within the type class, compiler tries to find the correct instance and this results in a warning.
+
+Example
+```
+instance sCalc :: DoingCalc Shape where
+  doCalc :: Shape -> Int
+  doCalc (Circle p radius) = 1
+  doCalc (Rectangle p w h) = 2
+  doCalc (Line p0 p1) = 5
+  doCalc (Text p text) = 4
+
+
+instance shapeCalc :: DoingCalc Shape where
+  doCalc :: Shape -> Int
+  doCalc (Circle p radius) = 1
+  doCalc (Rectangle p w h) = 2
+  doCalc (Line p0 p1) = 3
+  doCalc (Text p text) = 4
+
+main = log "Hello Sailor"
+```
+If we compile the above code, we get no errors or warnings. But if we change the main function to use "doCalc",
+```
+main = log $ show $ doCalc anotherShape
+```
+![Imgur](https://i.imgur.com/OP8rKgb.png)
+
+### Instance Dependencies
+
+```
+instance showArray :: Show a => Show (Array a) where
+```
+
+```
+instance showEither :: (Show a, Show b) => Show (Either a b) where
+```
