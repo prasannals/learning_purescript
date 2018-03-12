@@ -83,7 +83,9 @@ last [1, 2, 3, 4] -- Just (4)
 tail [1, 2, 3, 4] -- Just ([2,3,4])
 -- init returns all elements except the last element as a Maybe Array
 init [1, 2, 3, 4] -- Just ([1,2,3])
-
+```
+![Imgur](https://i.imgur.com/LrvewDH.png)
+```
 -- ".." operator creates a list from the LHS to the RHS both inclusive
 1..4 -- [1, 2, 3, 4]
 length [1, 2, 3, 4] -- 4  length returns the length of the array

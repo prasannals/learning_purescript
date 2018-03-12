@@ -46,7 +46,7 @@ s = "hello, world" -- s is a string
 anotherStr = "hello, " <> "world" -- <> is used for string concatenation
 
 s == anotherStr -- returns "true"
-s \= anotherStr -- returns "false" . "\=" is the "not equals" operator.
+s /= anotherStr -- returns "false" . "/=" is the "not equals" operator.
 
 ```
 
