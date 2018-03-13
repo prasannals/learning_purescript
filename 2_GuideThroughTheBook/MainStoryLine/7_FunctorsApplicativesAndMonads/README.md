@@ -118,3 +118,91 @@ class Apply f <= Applicative f where
 As we can see, Applicative is a subclass of Apply. For all Applicative f there needs to be an Apply f defined first.
 
 The function "pure" just wraps whatever data is passed in inside the type "f" and returns "f dataType"
+
+
+#### Case study - Maybe
+```
+instance applyMaybe :: Apply Maybe where
+  apply (Just fn) x = fn <$> x
+  apply Nothing   _ = Nothing
+
+instance applicativeMaybe :: Applicative Maybe where
+  pure = Just
+```
+
+### Monads
+
+```
+class Apply m <= Bind m where
+  bind :: forall a b. m a -> (a -> m b) -> m b
+
+class (Applicative m, Bind m) <= Monad m
+```
+![bind](bind.jpg)
+
+Another Example:
+
+![bind_example](bind_another_ex.jpg)
+
+\>\>= is the alias for "bind"
+
+Example
+```
+bind [1,2,3,4] (\i -> 1..i)
+-- is the same as
+[1,2,3,4] >>= (\i -> 1..i)
+```
+
+### A series of binds
+
+```
+bind [1,2,3] (\i -> bind [1,2,3] (\j -> [i, j]))
+-- evaluates to
+-- [1,1,1,2,1,3,2,1,2,2,2,3,3,1,3,2,3,3]
+```
+Can also be written as
+```
+[1,2,3] >>= (\i -> [1,2,3] >>= (\j -> [i, j]))
+```
+
+Can also be written as
+### do notation
+
+```
+do
+  i <- [1,2,3]  -- equivalent to [1,2,3] >>= (\i -> )
+  j <- [1,2,3]  -- equivalent to ( -> [1,2,3] >>= (\j -> ))
+  [i, j]        -- equivalent to ( -> [i, j])
+  -- the last line in a do notation always has to be an expression
+  -- Since our "m", the type constructor in these binds is an Array,
+  -- last expression evaluates to an Array [i, j]
+```
+
+The above expression is exactly equal to writing
+```
+[1,2,3] >>= (\i -> [1,2,3] >>= (\j -> [i, j]))
+```
+
+do notation is simply a convenient way of writing a lot of "bind"s together
+
+* do notation introduces a new block. Hence, mind the indentation.
+* The last line in a do block always has to be an expression
+
+More examples of do
+
+```
+func = do
+        i <- 1..5
+        j <- 1..i
+        k <- 1..j
+        [i,j,k]
+```
+is the same as
+```
+func = 1..5 >>= (\i -> 1..i >>= (\j -> 1..j >>= (\k -> [i,j,k])))
+```
+### type class Monad
+```
+class (Applicative m, Bind m) <= Monad m
+```
+Simply put, type "m" is a Monad if "m" has both Applicative instance as well as a Bind instance.
