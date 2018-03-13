@@ -33,3 +33,27 @@ instance functorMaybe :: Functor Maybe where
   map fn (Just x) = Just (fn x)
   map _  _        = Nothing
 ```
+
+### "Lifting" a function over values
+
+"Lifting" a function over a type constructor just means applying the function to the type contained within the type constructor.
+
+![mapLift](mapLift.jpg)
+
+![beingLifted](beingLifted.jpg)
+
+### Applicatives
+
+```
+class Functor f <= Apply f where
+  apply :: forall a b. f (a -> b) -> f a -> f b
+
+class Apply f <= Applicative f where
+  pure :: forall a. a -> f a
+```
+Let's have a look at the "apply" function.
+* Apply type class is a subclass of Functor. Hence, all "Apply f" needs to have "Functor f" instances as well.
+* apply is ALMOST exactly similar to map. Except that it takes "f (a -> b)" instead of "(a -> b)". The function itself will be wrapped in the Type Constructor "f".
+
+What's the advantage of having "f (a -> b)" rather than just "(a -> b)"?
+*
