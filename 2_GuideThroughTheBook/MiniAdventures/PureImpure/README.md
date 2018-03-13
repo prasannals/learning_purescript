@@ -10,6 +10,7 @@ Pure Function is a function which depends only on its input parameters. A functi
 For More Info :
 
 https://www.sitepoint.com/functional-programming-pure-functions/
+
 https://medium.com/@jamesjefferyuk/javascript-what-are-pure-functions-4d4d5392d49c
 
 
