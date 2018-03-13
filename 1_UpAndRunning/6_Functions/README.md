@@ -6,7 +6,7 @@ add :: Int -> Int -> Int
 add first second = first + second
 ```
 ### Function Declaration
-This gives information about the funtion parameters(inputs) and the function return type
+This gives information about the function parameters(inputs) and the function return type
 ```
 add :: Int -> Int -> Int  -- This line is the function Declaration
 -- :: starts the declaration
