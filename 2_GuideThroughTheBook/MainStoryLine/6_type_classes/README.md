@@ -161,7 +161,7 @@ class Eq a <= Ord a where
 #### Quick detour - Superclasses
 Observer "Eq a <= Ord a". "Eq a <=" is used to specify the constraint that there needs to be an Eq instance defined for "a" before an Ord instance can be defined for it. For every instance of Ord a there must be an Eq a instance defined. Eq a is called the superclass of Ord a. Ord a is the subclass of Eq a.
 
-![Imgur](https://i.imgur.com/M18W98T.jpg)
+![Superclasses](superclass.jpg)
 
 Defining an Ord instance for Point. Let's just have a simple rule saying that a Point is greater than another point if it's x axis is greater.
 
@@ -262,7 +262,7 @@ instance monoidPoint :: Monoid Point where
 
 ### Type Annotations
 
-![Imgur](https://i.imgur.com/57pVqoX.jpg)
+![type_annotation](type_annotations.jpg)
 
 ### Overlapping instances
 
@@ -293,15 +293,15 @@ If we compile the above code, we get no errors or warnings. But if we change the
 ```
 main = log $ show $ doCalc anotherShape
 ```
-![Imgur](https://i.imgur.com/OP8rKgb.png)
+![overlapping_inst](overlapping_instances.png)
 
 ### Instance Dependencies
 
 This is how to add constraints to type class instances.
 
-![Imgur](https://i.imgur.com/LUBL4cT.jpg)
+![instance_depend_single](instance_depend_single.jpg)
 
-![Imgur](https://i.imgur.com/5st3eIj.jpg)
+![instance_depend_multiple](instance_depend_multiple.jpg)
 
 ### Multi Parameter Type Classes
 There can be multiple quantified types in a type class as shown below
@@ -340,4 +340,4 @@ class Stream stream element | stream -> element where
 
 * We can even define type classes with zero arguments. These are called "Nullary Type Classes".
 * "Partial" is an example for Nullary type class
-* These type classes can be thought of as "labels" used to mark certain functions. When we add "Partial" constraint to a function, we're just marking the function and assuring the compiler that we're aware of what we're doing and to let this code compile even if it might end up crashing at runtime.
+* These type classes can be thought of as "labels" used to mark certain functions. When we add "Partial" constraint to a function, we're just marking the function and assuring the compiler that we're aware of what we're doing.

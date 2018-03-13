@@ -14,7 +14,7 @@ Functors basically transform something of type "f a" to "f b". They convert "a" 
 
 Each type "f" defines how mapping is done from "f a" to "f b" by defining a Functor instance. For example, Arrays define that mapping over Array of type a to Array of type b means that every element in the array is mapped from type a to b and the new Array of type b is returned.
 
-![Imgur](https://i.imgur.com/S0erqY1.jpg)
+![mapDesc](map.jpeg)
 
 <$> is an alias for map function.
 
