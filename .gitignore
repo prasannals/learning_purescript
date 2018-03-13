@@ -7,3 +7,5 @@ node_modules
 .psci
 output
 prep
+
+.DS_Store
