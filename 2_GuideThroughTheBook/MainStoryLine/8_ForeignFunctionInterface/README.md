@@ -44,7 +44,7 @@ Functions of a single parameter are represented as functions of single parameter
 
 Functions with more than one parameter are represented as a function within functions(curried functions)
 
-![funcPSToJS](funcPSToJS.png)
+![funcPSToJS](funcPSToJS.PNG)
 
 #### ADT Representation
 Let's see how ADTs will be represented in JavaScript. We use our familiar "Point" and "Shape" ADT that we've seen in the ADT chapter.
