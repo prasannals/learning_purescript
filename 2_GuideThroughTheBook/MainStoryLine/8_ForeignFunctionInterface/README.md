@@ -220,3 +220,77 @@ But if the data constructor doesn't have any arguments, as is the case with our 
 
 * NewType simply creates a function which returns the argument passed in.
 * NewTypes DONT exist at runtime. They are simply replaced by the type taken in by the data constructor (String in our case) at runtime.
+
+### Representing Type Class constraints
+
+Let's have a look at an example where a Show type class constraint is added to the "shout" function.
+
+```
+shout :: forall a. Show a => a -> String
+shout toShout = (show toShout) <> "!!!!"
+```
+
+We defined a Show instance for the Point ADT like so
+```
+instance showPoint :: Show Point where
+  show :: Point -> String
+  show (Point {x, y}) = "Point : x=" <> (show x) <> ", y=" <> (show y)
+```
+
+and then we pass in a Point into the shout function in the main function
+
+```
+main = log $ shout (Point {x : 10.0 , y : 20.0})
+```
+
+How would this be represented in JavaScript?
+
+shout function gets converted like so
+```
+var shout = function (dictShow) {
+    return function (toShout) {
+        return Data_Show.show(dictShow)(toShout) + "!!!!";
+    };
+};
+```
+Observe that even though "shout" has a single function, there is another parameter "dictShow" being passed into the function first.
+
+"dictShow" is a dictionary containing the show function for the Point type.
+
+To get into more detail, we see how the main function is defined in JS
+```
+var main = Control_Monad_Eff_Console.log(shout(showPoint)(new Point({
+    x: 10.0,
+    y: 20.0
+})));
+```
+So, what is "showPoint" here? showPoint is the instance of the Show class for Point. Here is the JS representation.
+```
+var showPoint = new Data_Show.Show(function (v) {
+    return "Point : x=" + (Data_Show.show(Data_Show.showNumber)(v.value0.x) + (", y=" + Data_Show.show(Data_Show.showNumber)(v.value0.y)));
+});
+```
+What is "Data_Show"? Data_Show is the module "Data.Show"
+```
+var Data_Show = require("../Data.Show");
+```
+Observe "new Data_Show.Show". What does that do? Its a constructor which adds the function passed in to the variable "show"
+```
+var Show = function (show) {
+    this.show = show;
+};
+```
+What does "Data_Show.show" do? It just returns the show function of whatever is passed in.
+```
+var show = function (dict) {
+    return dict.show;
+};
+```
+
+![typeClassAnnot](typeClassAnnot.jpg)
+
+Let's take another example, the "DoingCalc" type class that we had defined in our Type Classes lesson and see what JS code is generated for it.
+
+![doingCalc1](doingCalc1.jpg)
+
+![doingCalc2](doingCalc2.PNG)
