@@ -32,8 +32,8 @@ handleCases _ = "Anything other than 0 and 1. Much better!"
 
 
 gcd :: Int -> Int -> Int
-gcd n 0 = n -- can specify a few pages as patterns (i.e. 0 in this case)
-            -- other variables can be bound to names (i.e. "n" in this case)
+gcd n 0 = n -- can specify a few arguments as patterns (i.e. 0 in this case)
+            -- other values can be bound to names (i.e. "n" in this case)
 gcd 0 m = m
 gcd n m = if n > m
             then gcd (n - m) m
@@ -59,7 +59,7 @@ gcd n m | n > m = gcd (n - m) m
         | otherwise = gcd n (m - n)
 ```
 
-A guard is just a boolean expression that needs to be evaluated before the function executes.
+A guard is just a boolean expression that needs to be evaluated before the function executes. The corresponding expression is evaluated only if the boolean expression is true.
 
 pattern match ----> guard check ----> execute corresponding expression
 
