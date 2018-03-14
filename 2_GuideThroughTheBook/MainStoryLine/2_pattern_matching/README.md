@@ -61,6 +61,8 @@ gcd n m | n > m = gcd (n - m) m
 
 A guard is just a boolean expression that needs to be evaluated before the function executes. The corresponding expression is evaluated only if the boolean expression is true.
 
+![guards](guards.jpg)
+
 pattern match ----> guard check ----> execute corresponding expression
 
 Syntax is as you see in the example. Put a "|" after the parameters and specify the guard condition after which we can specify what the function evaluates to.
