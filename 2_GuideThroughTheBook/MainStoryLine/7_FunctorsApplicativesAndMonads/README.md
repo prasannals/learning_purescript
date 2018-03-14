@@ -97,7 +97,9 @@ OR we could just use apply
 apply is cool in that way. It doesn't care even if the function is in a type "f", it removes the function from "f" and lifts it over the remaining values
 
 map (a -> b -> c -> d) (f a) gives  f (b -> c -> d)
+
 apply (f (b -> c -> d)) (f b)  gives  f (c -> d)
+
 apply (f (c -> d))  (f c)      gives  f (d)
 
 which is what we want.
