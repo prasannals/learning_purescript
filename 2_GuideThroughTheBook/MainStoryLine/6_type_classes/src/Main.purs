@@ -102,12 +102,12 @@ instance monoidPoint :: Monoid Point where
 class DoingCalc a where
   doCalc :: a -> Int
 
-instance sCalc :: DoingCalc Shape where
-  doCalc :: Shape -> Int
-  doCalc (Circle p radius) = 1
-  doCalc (Rectangle p w h) = 2
-  doCalc (Line p0 p1) = 5
-  doCalc (Text p text) = 4
+-- instance sCalc :: DoingCalc Shape where
+--   doCalc :: Shape -> Int
+--   doCalc (Circle p radius) = 1
+--   doCalc (Rectangle p w h) = 2
+--   doCalc (Line p0 p1) = 5
+--   doCalc (Text p text) = 4
 
 
 instance shapeCalc :: DoingCalc Shape where
