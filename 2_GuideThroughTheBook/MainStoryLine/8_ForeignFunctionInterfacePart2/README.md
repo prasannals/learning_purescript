@@ -1,296 +1,240 @@
-## Foreign Function Interface
+## Foreign Function Interface Part 2
 
-### Calling PureScript code from JavaScript
+## Calling JavaScript code from PureScript
 
-### Using "pulp build" - CommonJS modules
+Let's say we have a file, say, "Main.purs" from which we want to call our JavaScript code from
 
-1. Build the project into CommonJS module using "pulp build"
-2. Import the module using "var moduleName = require('ModuleName')"
-3. Your "moduleName" variable now contains all the functions inside the module "ModuleName".
+* Create a file "Main.js" in the same folder (since we're calling the code from Main.purs, our js file name is Main.js, if it were SomethingElse.purs, we'd have SomethingElse.js).
 
+* Write your JavaScript function in the Main.js. The first line of this Main.js should be "use strict;"
 
-### Using "pulp build -O --to file.js" - using global purescript namespace
+* Add all the functions you want to export as properties to the "exports" object
 
-1. Build the project into a JavaScript file using "pulp build -O --to file.js".
-2. "PS" is a global variable containing all your modules.
-3. In our case, let's say we want the module "ModuleName", we can access it using "PS.ModuleName". We could also simply assign it to a variable using "var moduleName = PS.ModuleName"
-4. "moduleName" variable now contains all the functions inside the module "ModuleName".
-
-### Name generation
-
-Refer book
-
-### Runtime Data Representation
-
-![psToRuntime](psToRuntime.jpg)
-
-In this section, we understand how PureScript types are represented in JavaScript.
-
-Simple Types are translated to their JavaScript equivalent as shown below
-
-![simpleTypeChart](simpleTypeChart.jpg)
-
-BUT all of the corresponding JS values CANNOT be "undefined" or "null".
-
-![simpleTypes](simpleTypes.jpg)
-
-Arrays are converted to JavaScript arrays but all elements will be of same type in the converted JS array.
-
-Records are represented as JavaScript Objects.
-
-![arrRec](arrRec.jpg)
-
-Functions of a single parameter are represented as functions of single parameter even in JavaScript.
-
-Functions with more than one parameter are represented as a function within functions(curried functions)
-
-![funcPSToJS](funcPSToJS.PNG)
-
-#### ADT Representation
-Let's see how ADTs will be represented in JavaScript. We use our familiar "Point" and "Shape" ADT that we've seen in the ADT chapter.
-
-PureScript code
-```
-module Main where
-
-import Prelude
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, log)
-
-data Shape = Circle Point Number
-  | Rectangle Point Number Number
-  | Line Point Point
-  | Text Point String
-  | GhostShape
-
-data Point = Point { x :: Number, y :: Number}
-
-createPoint :: Number -> Number -> Point
-createPoint x y = Point {x, y}
-
-exampleLine :: Shape
-exampleLine = Line p1 p2
-  where
-    p1 :: Point
-    p1 = Point { x: 0.0, y: 0.0 }
-
-    p2 :: Point
-    p2 = Point { x: 100.0, y: 50.0 }
-
-
-anotherShape :: Shape
-anotherShape = Circle (Point {x : 50.0, y : 50.0}) 100.0
-
-
-main :: forall e. Eff (console :: CONSOLE | e) Unit
-main = log "Hello sailor!"
-```
-
-JavaScript code for the above PureScript code
-```
+~~~javascript
 "use strict";
-var Control_Monad_Eff = require("../Control.Monad.Eff");
-var Control_Monad_Eff_Console = require("../Control.Monad.Eff.Console");
-var Prelude = require("../Prelude");
-var Point = (function () {
-    function Point(value0) {
-        this.value0 = value0;
-    };
-    Point.create = function (value0) {
-        return new Point(value0);
-    };
-    return Point;
-})();
-var Circle = (function () {
-    function Circle(value0, value1) {
-        this.value0 = value0;
-        this.value1 = value1;
-    };
-    Circle.create = function (value0) {
-        return function (value1) {
-            return new Circle(value0, value1);
-        };
-    };
-    return Circle;
-})();
-var Rectangle = (function () {
-    function Rectangle(value0, value1, value2) {
-        this.value0 = value0;
-        this.value1 = value1;
-        this.value2 = value2;
-    };
-    Rectangle.create = function (value0) {
-        return function (value1) {
-            return function (value2) {
-                return new Rectangle(value0, value1, value2);
-            };
-        };
-    };
-    return Rectangle;
-})();
-var Line = (function () {
-    function Line(value0, value1) {
-        this.value0 = value0;
-        this.value1 = value1;
-    };
-    Line.create = function (value0) {
-        return function (value1) {
-            return new Line(value0, value1);
-        };
-    };
-    return Line;
-})();
-var Text = (function () {
-    function Text(value0, value1) {
-        this.value0 = value0;
-        this.value1 = value1;
-    };
-    Text.create = function (value0) {
-        return function (value1) {
-            return new Text(value0, value1);
-        };
-    };
-    return Text;
-})();
-var GhostShape = (function () {
-    function GhostShape() {
 
-    };
-    GhostShape.value = new GhostShape();
-    return GhostShape;
-})();
-var main = Control_Monad_Eff_Console.log("Hello sailor!");
-var exampleLine = (function () {
-    var p2 = new Point({
-        x: 100.0,
-        y: 50.0
-    });
-    var p1 = new Point({
-        x: 0.0,
-        y: 0.0
-    });
-    return new Line(p1, p2);
-})();
-var createPoint = function (x) {
-    return function (y) {
-        return new Point({
-            x: x,
-            y: y
-        });
-    };
+function addAwesome(someStr){
+  return someStr + " is awesome!";
+}
+
+exports.addAwesome = addAwesome;
+~~~
+
+* In Main.purs, import the foreign function (this is what we call our JavaScript function) using
+~~~purescript
+foreign import addAwesome :: String -> String
+~~~
+
+* We can now use our foreign "addAwesome" function in our PureScript code.
+
+~~~purescript
+main = log $ addAwesome "Gulab Jamoon"
+
+-- prints "Gulab Jamoon is awesome" onto the console.
+~~~
+
+
+We can export pre existing functions from JS too. For example, the "encodeURIComponent" function.
+
+In Main.js
+
+~~~javascript
+exports.encodeURIComponent = encodeURIComponent;
+~~~
+
+In Main.purs
+
+~~~PureScript
+foreign import encodeURIComponent :: String -> String
+
+main = log $ encodeURIComponent "Gulab Jamoon"
+
+-- prints "Gulab%20Jamoon"
+~~~
+
+### Getting deeper into what we mean when we say "foreign import addAwesome :: String -> String"
+
+We might initially look at the above declaration and feel that "addAwesome" is a pure function which takes in a String and returns a String. Butttt.... well, it's not that straightforward.
+
+What we actually mean by "foreign import addAwesome :: String -> String" is that PureScript will check the first parameter type and make sure that first parameter is of type String. The return type, compiler understands that it is expecting a String. And compiler will treat whatever is returned as a String in it's type system.
+
+The compiler will not run any checks to make sure that the return type is actually something compatible with a PureScript String. For example, let's define another foreign function "fakeAwesome"
+
+
+#### CASE 1:
+
+In Main.js
+
+~~~javascript
+// Only if "someStr" variable is "gulab jamoon", add " is awesome!" to string. Else return the object {name : "Sleepy", age : 23}
+function fakeAwesome(someStr){
+  if(someStr.toLowerCase() == "gulab jamoon"){
+    return someStr + " is awesome!";
+  }else{
+    return {name: "Sleepy", age:23}; // NOT a string
+  }
+}
+~~~
+
+In Main.purs
+
+~~~PureScript
+foreign import fakeAwesome :: String -> String
+
+fakeAwesomeTest :: forall e. String -> Eff (console :: CONSOLE | e) Unit
+fakeAwesomeTest st = log $ ( "fakeAwesome output : " <> (fakeAwesome st))
+
+main = fakeAwesomeTest "Gulab Jamoon"
+
+-- prints "fakeAwesome output : Gulab Jamoon is awesome!"
+~~~
+
+#### CASE 2:
+
+But if, instead, we had a main function as shown below
+
+~~~purescript
+main = fakeAwesomeTest "Laddu"
+
+-- prints "fakeAwesome output : [object Object]"
+~~~
+
+#### CASE 3:
+
+If, instead, we had a main function and fakeAwesomeTest as
+~~~purescript
+fakeAwesomeTest :: forall e. String -> Eff (console :: CONSOLE | e) Unit
+fakeAwesomeTest st = log $ fakeAwesome st
+
+main = fakeAwesomeTest "Laddu"
+-- directly logging.
+-- prints "{name: 'Sleepy', age: 23}"
+~~~
+
+Case 1 is expected and normal. But what is happening in case 2 and case 3? And why do they differ so much? One might expect to see "[object Object]" printed in Case 3 since we removed the "fakeAwesome output : " string appending. But we see a completely different output. Also, why doesn't the code run into an exception? We are passing an Object where a string is expected. Shouldn't that raise an exception anywhere?
+
+When we tell the compiler that the foreign function will return a String, what happens is that the compiler just lets whatever object you pass back be treated like a string.(even if its not a string)
+
+![foreignFuncInterpretation](foreignFuncInterpretation.jpg)
+
+Okayyy.... Compiler treats an object as a String..... and it seems to be working fineee! WHY ISN'T ANYTHING CRASHING?!
+
+In CASE 2, our fakeAwesome function is calling "<>" and log
+~~~PureScript
+log $ ( "fakeAwesome output : " <> (fakeAwesome st))
+~~~
+<> is nothing but an alias for the "append" function in Semigroup type class
+
+SemiGroup instance for String is defined as
+```purescript
+instance semigroupString :: Semigroup String where
+  append = concatString
+
+foreign import concatString :: String -> String -> String
+```
+
+"concatString"s JS code is
+~~~javascript
+exports.concatString = function (s1) {
+  return function (s2) {
+    return s1 + s2;
+  };
 };
-var anotherShape = new Circle(new Point({
-    x: 50.0,
-    y: 50.0
-}), 100.0);
-module.exports = {
-    Point: Point,
-    Circle: Circle,
-    Rectangle: Rectangle,
-    Line: Line,
-    Text: Text,
-    GhostShape: GhostShape,
-    anotherShape: anotherShape,
-    createPoint: createPoint,
-    exampleLine: exampleLine,
-    main: main
+~~~
+
+We're appending two strings using the "+" string append operation in JavaScript. Let's try a simple experiment in JS.
+~~~javascript
+let a = {name : "Sleepy", age :23}
+console.log( "hello " + a )
+//prints "hello [object Object]" on the console.
+~~~
+
+Lets sum it all up - PureScript is just passing whatever was returned around. Since the object was passed to append function which in turn passed it to concatString foreign function, which then used it with the JavaScript string "+" operation, since all that happened, and since that "fakeAwesome output : " + obj would result in "fakeAwesome output : [object Object]" in JavaScript, we get the same output in PureScript.
+
+BUT in case 3, we're passing the returned "String" (actually an object) into the log function directly.
+
+log function is defined in PureScript as
+~~~PureScript
+foreign import log
+  :: forall eff
+   . String
+  -> Eff (console :: CONSOLE | eff) Unit
+~~~
+
+Its definition in JS is
+~~~javascript
+exports.log = function (s) {
+  return function () {
+    console.log(s);
+    return {};
+  };
 };
-```
+~~~
 
-Each data constructor gets a variable of its own. Let's take the "Circle" data constructor for example.
+If we try the following in JS console
+~~~javascript
+let a = {name : "Sleepy", age :23}
+console.log(a)
 
-![CircleDataConstructor](circle.PNG)
+//prints "{name: 'Sleepy', age: 23}"
+~~~
 
-* Firstly, a constructor which accepts the arguments of the data constructor gets created.
-* Secondly, since Circle does have arguments, a "create" function gets created. This function can be used as a curried function to create a Circle data type. The parameters passed into the "create" function are the arguments of the "Circle" data constructor.
+In Case 3, since we're passing the returned object directly into the foreign function log, foreign functon log just calls "console.log" and since console.log has the behaviour of printing out all the key value pairs of an object, we get "{name : 'Sleepy', age: 23}" printed out.
 
-Side note : the returned "Circle" is the Constructor "Circle". But Circle also has an attribute, a function called "create". Can use it as "new Circle(val0, val1)" or as "Circle.create(val0)(val1)".
+#### IMPORTANT INFERENCE
+The compiler treats the returned object as a String and lets the object be passed into wherever a string is expected. The actual behaviour depends on the definition of the function and how the object is used in the function.
 
-But if the data constructor doesn't have any arguments, as is the case with our "GhostShape" data constructor,
+BUT still, why isn't anything crashing?! This.... this... it shouldn't work!
 
-![GhostShapeConstructor](ghostShape.PNG)
+Okay, okay. let's make it crash
 
-* In this case, an empty Constructor is created.
-* A "value" attribute containing an instance of the "GhostShape" is created.
+In Main.purs
+~~~purescript
+import Data.String (length)
 
+fakeAwesomeCrash :: forall e. String -> Eff (console :: CONSOLE | e) Unit
+fakeAwesomeCrash st = log $ show $ length (fakeAwesome st)
+-- length function just returns the length of the string
 
-#### NewType Representation
+main = fakeAwesomeCrash "Gulab Jamoon"
 
-![NewTypeInJS](newtypeInJS.jpg)
+-- prints "24"
+~~~
 
-* NewType simply creates a function which returns the argument passed in.
-* NewTypes DONT exist at runtime. They are simply replaced by the type taken in by the data constructor (String in our case) at runtime.
-
-### Representing Type Class constraints
-
-Let's have a look at an example where a Show type class constraint is added to the "shout" function.
-
-```
-shout :: forall a. Show a => a -> String
-shout toShout = (show toShout) <> "!!!!"
-```
-
-We defined a Show instance for the Point ADT like so
-```
-instance showPoint :: Show Point where
-  show :: Point -> String
-  show (Point {x, y}) = "Point : x=" <> (show x) <> ", y=" <> (show y)
-```
-
-and then we pass in a Point into the shout function in the main function
-
-```
-main = log $ shout (Point {x : 10.0 , y : 20.0})
-```
-
-How would this be represented in JavaScript?
-
-shout function gets converted like so
-```
-var shout = function (dictShow) {
-    return function (toShout) {
-        return Data_Show.show(dictShow)(toShout) + "!!!!";
-    };
+But length function is a foreign function defined in JS as
+~~~javascript
+exports.length = function (s) {
+  return s.length;
 };
-```
-Observe that even though "shout" has a single function, there is another parameter "dictShow" being passed into the function first.
+~~~
+Does an object have length attribute? Lets find out
 
-"dictShow" is a dictionary containing the show function for the Point type.
+If we change out main function in above example to
 
-To get into more detail, we see how the main function is defined in JS
-```
-var main = Control_Monad_Eff_Console.log(shout(showPoint)(new Point({
-    x: 10.0,
-    y: 20.0
-})));
-```
-So, what is "showPoint" here? showPoint is the instance of the Show class for Point. Here is the JS representation.
-```
-var showPoint = new Data_Show.Show(function (v) {
-    return "Point : x=" + (Data_Show.show(Data_Show.showNumber)(v.value0.x) + (", y=" + Data_Show.show(Data_Show.showNumber)(v.value0.y)));
-});
-```
-What is "Data_Show"? Data_Show is the module "Data.Show"
-```
-var Data_Show = require("../Data.Show");
-```
-Observe "new Data_Show.Show". What does that do? Its a constructor which adds the function passed in to the variable "show"
-```
-var Show = function (show) {
-    this.show = show;
+~~~purescript
+main = fakeAwesomeCrash "Ladoo"
+~~~
+
+s.length will return "undefined" from length function. "undefined" will be treated as an Int and passed into the show instance of the Int.
+
+~~~PureScript
+instance showInt :: Show Int where
+  show = showIntImpl
+
+foreign import showIntImpl :: Int -> String
+~~~
+
+"showIntImpl" is defined as
+~~~javascript
+exports.showIntImpl = function (n) {
+  return n.toString();
 };
-```
-What does "Data_Show.show" do? It just returns the show function of whatever is passed in.
-```
-var show = function (dict) {
-    return dict.show;
-};
-```
+~~~
 
-![typeClassAnnot](typeClassAnnot.jpg)
+undefined.toString? Yep. We get our program to crash. Finally.
 
-Let's take another example, the "DoingCalc" type class that we had defined in our Type Classes lesson and see what JS code is generated for it.
+~~~
+TypeError: Cannot read property 'toString' of undefined
+~~~
 
-![doingCalc1](doingCalc1.jpg)
-
-![doingCalc2](doingCalc2.PNG)
+Important lesson here - program behaviour gets unpredictable if you pass unexpected objects back. If you say you're going to return a String, return a String. Don't be a liar.

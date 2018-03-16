@@ -1,4 +1,4 @@
-## Foreign Function Interface
+## Foreign Function Interface Part 1
 
 ### Calling PureScript code from JavaScript
 
