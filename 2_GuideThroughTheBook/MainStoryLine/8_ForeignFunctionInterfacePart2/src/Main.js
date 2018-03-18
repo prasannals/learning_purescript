@@ -24,15 +24,11 @@ function logIt (logStr){
   console.log(logStr);
 }
 
-function badFunction(){
-  console.log("all evil stuff here")
-}
 
 exports.addAwesome = addAwesome;
 exports.fakeAwesome = fakeAwesome;
 exports.someCalc = someCalc;
 exports.logIt = logIt;
-exports.logTest = badFunction();
 exports.getName = getName;
 exports.getPlace =getPlace;
 exports.jsCalc =jsCalc;
@@ -54,3 +50,45 @@ function processAccount(account){
   console.log("Account Number : " + account.value0);
   return true;
 }
+
+
+
+function createNewContacts(){
+  return {};
+}
+
+function addToContacts(contacts){
+  return function(name){
+    return function(number){
+      contacts[name] = number;
+      return Object.assign({}, contacts); //returning a new copy
+    }
+  }
+}
+
+function removeFromContacts(contacts){
+  return function(name){
+    delete contacts[name];
+    return Object.assign({}, contacts);
+  }
+}
+
+function updateContacts(contacts){
+  return function(name){
+    return function(number){
+      contacts[name] = number;
+      return Object.assign({}, contacts);
+    }
+  }
+}
+
+
+function contactsStr(contacts){
+  return JSON.stringify(contacts);
+}
+
+exports.createNewContacts = createNewContacts;
+exports.addToContacts = addToContacts;
+exports.removeFromContacts = removeFromContacts;
+exports.updateContacts = updateContacts;
+exports.contactsStr = contactsStr;

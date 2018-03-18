@@ -149,7 +149,7 @@ console.log( "hello " + a )
 //prints "hello [object Object]" on the console.
 ~~~
 
-Lets sum it all up - PureScript is just passing whatever was returned around. Since the object was passed to append function which in turn passed it to concatString foreign function, which then used it with the JavaScript string "+" operation, since all that happened, and since that "fakeAwesome output : " + obj would result in "fakeAwesome output : [object Object]" in JavaScript, we get the same output in PureScript.
+Lets sum it all up - PureScript is just passing the object returned into whatever function we call. Since the object was passed to append function which in turn passed it to concatString foreign function, which then used it with the JavaScript string "+" operation, since all that happened, and since that "fakeAwesome output : " + obj would result in "fakeAwesome output : [object Object]" in JavaScript, we get the same output in PureScript.
 
 BUT in case 3, we're passing the returned "String" (actually an object) into the log function directly.
 
@@ -238,3 +238,156 @@ TypeError: Cannot read property 'toString' of undefined
 ~~~
 
 Important lesson here - program behaviour gets unpredictable if you pass unexpected objects back. If you say you're going to return a String, return a String. Don't be a liar.
+
+Side Note : PureScript primitive types cant have null or undefined assigned to them. Hence, when we say String is expected, what we actually mean is that we expect a JavaScript string which isn't null or undefined. Make sure those cases are handles as well.
+
+### Using PureScript ADTs, newtypes in JavaScript
+
+Review the concepts covered in the first part of the ForeignFunctionInterface course. To use the purescript data types in JavaScript, we need to understand how purescript types are represented in JavaScript(which is what we covered in Part1 of FFI)
+
+## Foreign Data
+
+Suppose we have a type in JS that can't be represented in PS. Some type that is only accessible in JavaScript. How can we work with such types in PureScript?
+
+If we can't directly access the type in PS, we can still treat the type as an Abstract Data Type (not the purescript ADT, rather, the concept of an Abstract Data Type) which is defined by its functions(functions which can be exported to PS and used from PS).
+
+Even if we're not allowed to modify the type in PS, we still need a way to reference the type in PS. This is where the "foreign import data" declaration can be used.
+
+```
+foreign import data Contacts :: Type
+```
+The above declaration is how we import a foreign data type into PureScript. We're telling the compiler to create a new type called "Contacts".
+
+* "Contacts" is a type constructor.
+* ":: Type" is used to represent the kind of the type.
+
+(Contacts can be represented easily even in PureScript but for the purposes of learning, we need a simple example. Hence, we build a simple Contacts Abstract Data Type)
+
+
+Let's say we have the following methods on the Contacts type
+
+<strong>add :: Contacts -> String -> String -> Contacts</strong>
+
+add adds a contact to the Contacts list. (second param is name, third is number) and returns a new Contacts list.
+
+<strong>remove :: Contacts -> String -> Contacts</strong>
+
+second param is the name of the contact.
+
+<strong>update :: Contacts -> String -> String -> Contacts</strong>
+
+second param is name. third param is new number.
+
+<strong>createNewContacts :: Contacts</strong>
+
+createNewContacts returns an empty Contacts type
+
+Let's see how we could create such a type in JS and how we could work with it in PureScript.
+
+In Main.js
+
+~~~javascript
+
+function createNewContacts(){
+  return {}; // this Object is our Contacts type
+}
+
+function addToContacts(contacts){ // the same contacts Object will be passed here
+  return function(name){ //  name of the contact. a String
+    return function(number){ // number of the contact. a String
+      contacts[name] = number;
+      return Object.assign({}, contacts); //returning a new copy
+    }
+  }
+}
+
+function removeFromContacts(contacts){// the same Object will be passed here as well
+  return function(name){ // name is a string. the name of the contact
+    delete contacts[name];
+    return Object.assign({}, contacts);
+  }
+}
+
+function updateContacts(contacts){//the same contacts Object will be passed here as well
+  return function(name){ // name is a String
+    return function(number){ // number is also a String. the new value of number
+      contacts[name] = number;
+      return Object.assign({}, contacts);
+    }
+  }
+}
+
+
+function contactsStr(contacts){// contacts is an Object.
+  return JSON.stringify(contacts);//return a Sting representing the Object
+}
+
+exports.createNewContacts = createNewContacts;
+exports.addToContacts = addToContacts;
+exports.removeFromContacts = removeFromContacts;
+exports.updateContacts = updateContacts;
+exports.contactsStr = contactsStr;
+~~~
+
+We can now import these functions into ps and use them.
+
+~~~purescript
+foreign import data Contacts :: Type
+foreign import createNewContacts :: Contacts
+foreign import addToContacts :: Contacts -> String -> String -> Contacts
+foreign import updateContacts :: Contacts -> String -> String -> Contacts
+foreign import removeFromContacts :: Contacts -> String -> Contacts
+foreign import contactsStr :: Contacts -> String
+
+-- addTest tests the addToContacts function
+-- adds  ("Prasanna" , "1234"), ("Person2", "5678") to the Contacts object
+addTest :: Contacts
+addTest = addToContacts (addToContacts (createNewContacts) "Prasanna" "1234") "Person2" "5678"
+
+-- updateTest tests the "updateContacts" function
+-- updateTest uses the Contacts object generated by addTest and updates "Prasanna" from "1234" to "9876"
+updateTest :: Contacts
+updateTest = updateContacts addTest "Prasanna" "9876"
+
+-- removeTest removes the "Prasanna" entry from the Contacts
+removeTest :: Contacts
+removeTest = removeFromContacts addTest "Prasanna"
+
+-- logs the result of whatever test we decide to run
+contactsTest :: forall e. Eff (console :: CONSOLE | e) Unit
+contactsTest = log $ contactsStr $ removeTest
+~~~
+
+
+## Side Effects
+
+We've entered the realm of JS. Where side effects roam unchecked and freely. Let's now learn how to import foreign functions which can cause such side effects.
+
+#### Kind Effect
+
+We have previously seen the kind called "Type" which is the kind of all types that we have encountered so far.
+
+We will now have a look at a new kind called Effect. Effect is the kind of all effects.
+
+Example :
+
+~~~purescript
+-- | The `CONSOLE` effect represents those computations which write to the
+-- | console.
+foreign import data CONSOLE :: Effect
+
+-- the above line declares a new data of kind Effect called "CONSOLE". CONSOLE is used to represent the console side effects.
+
+-- | The `RANDOM` effect indicates that an Eff action may access or modify the
+-- | JavaScript global random number generator, i.e. `Math.random()`.
+foreign import data RANDOM :: Effect
+~~~
+
+## Eff Monad
+
+Eff Monad provides an API to represent side effects
+
+Read section 8.10
+
+#### Rows and Objects
+ 
