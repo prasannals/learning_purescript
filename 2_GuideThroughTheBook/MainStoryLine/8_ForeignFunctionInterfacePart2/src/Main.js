@@ -21,7 +21,9 @@ function someCalc(num){
 }
 
 function logIt (logStr){
-  console.log(logStr);
+  return function (){
+    console.log(logStr);
+  };
 }
 
 

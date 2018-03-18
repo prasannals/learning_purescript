@@ -407,7 +407,10 @@ Let's create our own "logIt" function which takes a string and logs it onto the 
 In Main.js
 ~~~javascript
 function logIt (logStr){
-  console.log(logStr);
+  return function (){
+    console.log(logStr);
+  }; // returns a function rather than a single value
+  // because Eff returns a computation. Not a single value.
 }
 
 exports.logIt = logIt;
