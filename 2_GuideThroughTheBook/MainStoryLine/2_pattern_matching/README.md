@@ -152,6 +152,7 @@ Now, the function will compile without error. But to call it
 
 TIP : Use Maybe type to return "Nothing" in cases where you're unsure what your function should return.
 
+"Partial" is a Nullary Type Class. More on this in the type classes chapter.
 
 ## What else can we pattern match?
 

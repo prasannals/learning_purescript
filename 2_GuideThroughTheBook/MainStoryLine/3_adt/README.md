@@ -112,6 +112,6 @@ newtype TypeName = DataCons Param
 ```
 
 Why have newtypes?
-* newtypes only exist at compile type. They help in compile time type checking.
+* newtypes only exist at compile time. They help in compile time type checking.
 * They are replaced by whatever they represent (the "Param") at runtime. So, no runtime performance overhead is incurred.
 * Allow us to attach different behaviour to a type without runtime overhead.

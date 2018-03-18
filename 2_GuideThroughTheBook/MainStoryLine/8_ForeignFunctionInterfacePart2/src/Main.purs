@@ -8,7 +8,7 @@ import Data.String (length)
 foreign import addAwesome :: String -> String
 foreign import fakeAwesome :: String -> String
 foreign import someCalc :: Number -> Number
-foreign import logIt :: String -> String
+foreign import logIt :: forall eff. String -> Eff (console :: CONSOLE | eff) Unit
 
 foreign import data MyNewData :: Type -> Type
 
@@ -25,8 +25,6 @@ fakeAwesomeCrash st = log $ show $ length (fakeAwesome st)
 someCalcTest :: forall e. Number -> Eff (console :: CONSOLE | e) Unit
 someCalcTest param = log $ show $ (someCalc param )
 
-logItTest :: String -> String
-logItTest str = logIt str
 
 myNewDataTest :: forall e. MyNewData String -> Eff (console :: CONSOLE | e) Unit
 myNewDataTest dat = log $ getPlace dat
@@ -58,5 +56,5 @@ removeTest = removeFromContacts addTest "Prasanna"
 contactsTest :: forall e. Eff (console :: CONSOLE | e) Unit
 contactsTest = log $ contactsStr $ removeTest
 
-main :: forall e. Eff (console :: CONSOLE | e) Unit
-main = contactsTest
+main :: Eff (console :: CONSOLE) Unit
+main = logIt $ "Hello, Sailorrrr"

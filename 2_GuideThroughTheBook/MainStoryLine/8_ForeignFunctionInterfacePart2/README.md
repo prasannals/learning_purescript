@@ -1,4 +1,4 @@
-## Foreign Function Interface Part 2
+convenience## Foreign Function Interface Part 2
 
 ## Calling JavaScript code from PureScript
 
@@ -390,4 +390,43 @@ Eff Monad provides an API to represent side effects
 Read section 8.10
 
 #### Rows and Objects
- 
+
+Read section 8.14
+
+~~~
+> :kind Eff
+# Control.Monad.Eff.Effect -> Type -> Type
+~~~
+
+Eff takes a row of types of kind Control.Monad.Eff.Effect  as the first type parameter, which represents the list of Effects that are allowed to occur in the computation represented by that Eff Monad.
+
+Second parameter is of kind Type. This second parameter represents the return type.
+
+Let's create our own "logIt" function which takes a string and logs it onto the console.
+
+In Main.js
+~~~javascript
+function logIt (logStr){
+  console.log(logStr);
+}
+
+exports.logIt = logIt;
+~~~
+
+In Main.purs
+
+~~~purescript
+foreign import logIt :: forall eff. String -> Eff (console :: CONSOLE | eff) Unit
+
+main = logIt "Hello, Navigator"
+
+-- prints "Hello, Navigator" to the console.
+~~~
+
+![eff](eff.jpg)
+
+### Will it cause our code to crash if we use side effects without mentioning it in Eff?
+
+Well, turns out that mentioning the effects is optional. But highly recommended. The row of effects is for our convenience. We can literally do anything inside any foreign JS function. Even if we haven't specified the Eff type.
+
+BUT if we don't specify the Eff type in a function, purescript compiler assumes that the function is pure. This might cause it to not calculate the result everytime the function is called. If the result for a value is already known, the result might be directly returned. By specifying Eff, we tell the compiler to calculate the result every single time the function is called.
