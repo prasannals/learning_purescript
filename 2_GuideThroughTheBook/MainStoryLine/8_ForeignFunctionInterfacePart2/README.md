@@ -1,4 +1,4 @@
-convenience## Foreign Function Interface Part 2
+## Foreign Function Interface Part 2
 
 ## Calling JavaScript code from PureScript
 
