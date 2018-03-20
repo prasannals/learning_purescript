@@ -68,7 +68,6 @@ modifySTRef :: forall a h eff. STRef h a -> (a -> a) -> Eff (st :: ST h | eff) a
 #### A simple (yet, useless) example
 
 ~~~purescript
-
 fu = do
   ref <- newSTRef 0  -- create a new STRef
   _ <- modifySTRef ref (\ref -> ref + 10)  -- modify the STRef to take the current value and add 10 to it

@@ -40,9 +40,9 @@ Use the "." (dot) syntax to access the elements inside the record.
 
 ### But the type synonyms aren't limited to just records. What else can we define it as?
 
-type Name = Val
+type Name = type
 
-Val here can be any type that can be in a function declaration.
+"type" here can be any type that can be in a function declaration.
 
 ~~~purescript
 type a = Int -- actually INVALID. Because type names should always start with a capital letter
